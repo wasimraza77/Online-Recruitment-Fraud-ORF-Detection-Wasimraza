@@ -122,50 +122,58 @@ def _build_welcome_html(full_name: str, email: str, password: str) -> str:
 
 
 def send_welcome_email(full_name: str, email: str, password: str) -> bool:
-    """Send a welcome email to a newly registered user.
+    """Send a welcome email to a newly registered user in a background thread.
 
-    Returns True if sent successfully, False otherwise.
-    Silently skips if SMTP is not configured.
+    Returns True immediately. The actual email sending runs asynchronously
+    to prevent blocking the web server requests.
     """
-    config = _get_smtp_config()
-    if config is None:
-        logger.info("SMTP not configured — skipping welcome email for %s", email)
-        return False
+    import threading
 
-    sender_email, sender_password = config
+    def _run():
+        config = _get_smtp_config()
+        if config is None:
+            logger.info("SMTP not configured — skipping welcome email for %s", email)
+            return
 
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "Welcome to Online Recruitment Fraud Detection"
-        msg["From"] = f"Fraud Detection System <{sender_email}>"
-        msg["To"] = email
+        sender_email, sender_password = config
 
-        html_body = _build_welcome_html(full_name, email, password)
-        msg.attach(MIMEText(html_body, "html", "utf-8"))
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = "Welcome to Online Recruitment Fraud Detection"
+            msg["From"] = f"Fraud Detection System <{sender_email}>"
+            msg["To"] = email
 
-        # Plain text fallback
-        plain = (
-            f"Welcome, {full_name}!\n\n"
-            f"Your account has been created successfully.\n\n"
-            f"Account Details:\n"
-            f"  Name: {full_name}\n"
-            f"  Email: {email}\n"
-            f"  Password: {password}\n\n"
-            f"You can now log in and start using the fraud detection tools.\n\n"
-            f"— Online Recruitment Fraud Detection"
-        )
-        msg.attach(MIMEText(plain, "plain", "utf-8"))
+            html_body = _build_welcome_html(full_name, email, password)
+            msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, email, msg.as_string())
+            # Plain text fallback
+            plain = (
+                f"Welcome, {full_name}!\n\n"
+                f"Your account has been created successfully.\n\n"
+                f"Account Details:\n"
+                f"  Name: {full_name}\n"
+                f"  Email: {email}\n"
+                f"  Password: {password}\n\n"
+                f"You can now log in and start using the fraud detection tools.\n\n"
+                f"— Online Recruitment Fraud Detection"
+            )
+            msg.attach(MIMEText(plain, "plain", "utf-8"))
 
-        logger.info("Welcome email sent to %s", email)
-        return True
+            # Set a tight connection timeout (10 seconds) to avoid hanging
+            with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, email, msg.as_string())
 
-    except Exception as exc:
-        logger.warning("Failed to send welcome email to %s: %s", email, exc)
-        return False
+            logger.info("Welcome email sent to %s", email)
+        except Exception as exc:
+            logger.warning("Failed to send welcome email to %s: %s", email, exc)
+
+    # Launch in a daemonized background thread so the HTTP request returns instantly
+    thread = threading.Thread(target=_run)
+    thread.daemon = True
+    thread.start()
+    return True
+

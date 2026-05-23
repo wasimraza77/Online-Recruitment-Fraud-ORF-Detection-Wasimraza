@@ -522,12 +522,23 @@
           const response = await fetch(chatUploadUrl, { method: "POST", body: formData });
           const data = await response.json();
           removeTyping();
+          let engineLabel = "Rule-based";
+          if (data.engine === "gemini") {
+            engineLabel = "Detective-AI";
+          }
+          
+          let engineBadge = document.getElementById("ai-engine-badge");
+          if (!engineBadge) {
+            engineBadge = document.createElement("span");
+            engineBadge.id = "ai-engine-badge";
+            engineBadge.className = "engine-badge " + (engineLabel === "Detective-AI" ? "engine-gemini" : "engine-fallback");
+          }
           const reply = data.reply || "Sorry, I could not process the file.";
           appendMsg("bot", reply);
           conversationHistory.push({ role: "model", content: reply });
           if (engineBadge) {
-            engineBadge.textContent = data.engine === "gemini" ? "Gemini" : "Rule-based";
-            engineBadge.className = "engine-badge " + (data.engine === "gemini" ? "engine-gemini" : "engine-fallback");
+            engineBadge.textContent = engineLabel;
+            engineBadge.className = "engine-badge " + (engineLabel === "Detective-AI" ? "engine-gemini" : "engine-fallback");
           }
         } catch (_error) {
           removeTyping();
@@ -562,7 +573,7 @@
           appendMsg("bot", reply);
           conversationHistory.push({ role: "model", content: reply });
           if (engineBadge) {
-            engineBadge.textContent = data.engine === "gemini" ? "Gemini" : "Rule-based";
+            engineBadge.textContent = data.engine === "gemini" ? "Detective-AI" : "Rule-based";
             engineBadge.className = "engine-badge " + (data.engine === "gemini" ? "engine-gemini" : "engine-fallback");
           }
         } catch (_error) {
@@ -587,13 +598,13 @@
           const res = await fetch(chatStatusUrl);
           const status = await res.json();
           if (status.gemini_active) {
-            engineLabel = "Gemini";
+            engineLabel = "Detective-AI";
             greeting = "Hello! I can answer questions about job fraud, recruitment scams, model results, or analyze a pasted job description.\n\nYou can also upload a PDF or image of a job posting using the attachment button for an instant AI fraud scan.\n\nHow can I help you today?";
           }
         } catch (_) { }
         if (engineBadge) {
           engineBadge.textContent = engineLabel;
-          engineBadge.className = "engine-badge " + (engineLabel === "Gemini" ? "engine-gemini" : "engine-fallback");
+          engineBadge.className = "engine-badge " + (engineLabel === "Detective-AI" ? "engine-gemini" : "engine-fallback");
         }
         appendMsg("bot", greeting, false);
       })();

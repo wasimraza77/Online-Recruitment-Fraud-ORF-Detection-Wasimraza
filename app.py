@@ -64,6 +64,9 @@ app.secret_key = "welcome"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.jinja_env.auto_reload = True
 
+# Initialize the database (SQLite or Postgres) on startup
+init_db()
+
 PUBLIC_ENDPOINTS = {"root", "admin_login", "admin_login_action", "register", "register_action", "static", "chat", "chat_status"}
 
 
@@ -565,7 +568,6 @@ def chat_status():
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(host="127.0.0.1", port=5000, debug=False)
 
 

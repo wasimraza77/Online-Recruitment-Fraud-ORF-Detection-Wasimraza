@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% set active_page = "predict" %}
+{% block title %}Results | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Fraud Detection Report{% endblock %}
+{% block topbar_title %}Detection Results{% endblock %}
+{% block topbar_subtitle %}Review which jobs look real and which may be suspicious.{% endblock %}
+
+{% block content %}
+{% if error %}
+  <section class="panel-card">
+    <div class="message message-error" style="margin-bottom:14px;">{{ error }}</div>
+    <div class="button-row">
+      <a class="button button-primary" href="{{ url_for('predict_view') }}">Try Again</a>
+      <a class="button button-secondary" href="{{ url_for('index') }}">Dashboard</a>
+    </div>
+  </section>
+
+{% elif results %}
+  <section class="results-shell">
+
+    <div class="page-banner">
+      <span class="hero-eyebrow">Report Summary</span>
+      <h2 class="hero-title small-title" style="margin-bottom:6px;">{{ summary.total }} job postings analyzed</h2>
+      <p class="hero-description" style="font-size:0.82rem;">Use filters and search to focus on specific results. Export or print when ready.</p>
+    </div>
+
+    <div class="stats-grid stats-grid-four">
+      <article class="stat-card">
+        <div class="stat-icon stat-icon-blue">
+          <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <span class="stat-label">Total Checked</span>
+        <strong class="stat-value">{{ summary.total }}</strong>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon stat-icon-green">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <span class="stat-label">Real Jobs</span>
+        <strong class="stat-value stat-success">{{ summary.real }}</strong>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon stat-icon-red">
+          <svg viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <span class="stat-label">Fraud Jobs</span>
+        <strong class="stat-value stat-danger">{{ summary.fraud }}</strong>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon stat-icon-amber">
+          <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <span class="stat-label">Avg. Confidence</span>
+        <strong class="stat-value">{{ "%.1f"|format(summary.avg_confidence) }}%</strong>
+      </article>
+    </div>
+
+    <div class="generation-timeline">
+      <div class="result-step">
+        <span class="step-dot" aria-hidden="true"></span>
+        <strong>Data Loaded</strong>
+        <p>{{ summary.total }} job posting records prepared for review.</p>
+      </div>
+      <div class="result-step">
+        <span class="step-dot" aria-hidden="true"></span>
+        <strong>Model Checked</strong>
+        <p>BERT embeddings + CNN classifier output converted into confidence scores.</p>
+      </div>
+      <div class="result-step">
+        <span class="step-dot" aria-hidden="true"></span>
+        <strong>Report Ready</strong>
+        <p>{{ summary.real }} real and {{ summary.fraud }} suspicious jobs identified.</p>
+      </div>
+    </div>
+
+    {% if risk_insights %}
+      <div class="insight-grid">
+        {% for insight in risk_insights %}
+          <article class="insight-card insight-{{ insight.tone }}">
+            <span class="insight-title">{{ insight.title }}</span>
+            <strong>{{ insight.value }}</strong>
+            <p>{{ insight.detail }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="panel-card">
+      <div class="results-toolbar">
+        <div>
+          <h2 class="section-title">Results</h2>
+          <p class="section-text">Filter and review the checked job postings.</p>
+        </div>
+        <div class="filter-row">
+          <button class="button button-filter is-active" type="button" data-filter="all">All ({{ summary.total }})</button>
+          <button class="button button-filter" type="button" data-filter="real">Real ({{ summary.real }})</button>
+          <button class="button button-filter" type="button" data-filter="fraud">Fraud ({{ summary.fraud }})</button>
+        </div>
+      </div>
+
+      <div class="results-actions" style="margin-bottom:14px;">
+        <label class="search-shell" style="flex:1;max-width:360px;">
+          <span class="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
+          </span>
+          <input type="search" placeholder="Search job title or location" data-results-search id="results-search-input">
+        </label>
+        <div class="button-row">
+          <button class="button button-secondary" type="button" data-export-results id="export-csv-btn">Export CSV</button>
+          <button class="button button-secondary" type="button" data-print-results id="print-report-btn">Print</button>
+          <a class="button button-secondary" href="{{ url_for('predict_view') }}" id="check-more-btn">Check More</a>
+        </div>
+      </div>
+
+      <div class="table-shell">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th data-export-header="Job Title">Job Title</th>
+              <th data-export-header="Location">Location</th>
+              <th data-export-header="Status">Status</th>
+              <th data-export-header="Confidence">Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in results %}
+              <tr data-result-row data-status="{% if item.is_fraud %}fraud{% else %}real{% endif %}">
+                <td data-export-cell data-export-value="{{ item.title }}">
+                  <div class="table-title">{{ item.title }}</div>
+                  <div class="table-description">{{ item.description[:100] }}{% if item.description|length > 100 %}&hellip;{% endif %}</div>
+                </td>
+                <td data-export-cell style="white-space:nowrap;">{{ item.location }}</td>
+                <td data-export-cell>
+                  {% if item.is_fraud %}
+                    <span class="status-badge status-fraud">Fraud</span>
+                  {% else %}
+                    <span class="status-badge status-real">Real</span>
+                  {% endif %}
+                </td>
+                <td data-export-cell>
+                  <div class="confidence-value">{{ item.confidence }}</div>
+                  <div class="confidence-bar-shell">
+                    <div class="confidence-bar" style="width:{{ item.confidence_value }}%;background:{% if item.is_fraud %}var(--red){% else %}var(--green){% endif %};"></div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-empty-state" data-results-empty hidden>
+        <p>No jobs match this filter.</p>
+      </div>
+    </div>
+
+  </section>
+
+{% else %}
+  <section class="center-shell">
+    <div class="panel-card" style="max-width:440px;text-align:center;padding:40px 28px;">
+      <h2 class="section-title" style="margin-bottom:6px;">No results yet</h2>
+      <p class="section-text" style="margin-bottom:20px;">Upload a CSV file to check job postings and create a fraud detection report.</p>
+      <div class="button-row" style="justify-content:center;">
+        <a class="button button-primary" href="{{ url_for('predict_view') }}">Check New Jobs</a>
+        <a class="button button-secondary" href="{{ url_for('index') }}">Dashboard</a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+{% endblock %}

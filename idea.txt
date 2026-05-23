@@ -1,0 +1,52 @@
+Project: Online Recruitment Fraud Detection
+
+Goal:
+- Classify a job post as `Real Job` or `Fraudulent Job`.
+
+Current app:
+- Flask entry point: `app.py`
+- Input: CSV with a `description` column
+- Output: prediction table with label + confidence
+
+Model runtime:
+- Reuses saved BERT-style embeddings when rows match known training text
+- Otherwise builds new sentence embeddings with `SentenceTransformer`
+- Runs NumPy CNN inference with:
+  - `model/cnn2d_weights.hdf5`
+  - `model/bert_X.npy`
+  - `model/Y.npy`
+
+India-focused data layer:
+- Fraud base kept from `Dataset/fake_job_postings.csv`
+- India real-job sources live in `Dataset/india_sources/`
+- Prepared India dataset bundle:
+  - `Dataset/india_real_jobs.csv`
+  - `Dataset/india_synthetic_fraud.csv`
+  - `Dataset/india_training_dataset.csv`
+- Default demo upload file:
+  - `Dataset/testData.csv` (India-focused and offline-safe because it reuses saved-base rows)
+
+Key implementation file:
+- `scripts/prepare_india_dataset.py`
+  - downloads public India job sources
+  - standardizes schema
+  - creates rule-based India scam samples
+  - writes the final training/demo CSVs
+
+Important files:
+- `app.py`
+- `templates/`
+- `static/default.css`
+- `scripts/prepare_india_dataset.py`
+- `Dataset/india_dataset_summary.json`
+- `FraudJobDetection.ipynb` (legacy notebook, not the reliable run path)
+
+Run:
+- `cd FraudRecruitment`
+- `source .venv/bin/activate`
+- `python app.py`
+- open `http://127.0.0.1:5000`
+
+Note:
+- The live app still uses the existing saved model artifacts.
+- The new India dataset bundle is the replacement data pipeline for future retraining and India-specific demos.

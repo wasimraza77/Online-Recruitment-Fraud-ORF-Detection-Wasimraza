@@ -1,0 +1,42 @@
+{
+  "created_at": "2026-05-03T16:02:19.833491+00:00",
+  "counts": {
+    "real_jobs": 35371,
+    "fraud_jobs": 3298,
+    "training_rows": 38669,
+    "fraud_ratio": 8.53
+  },
+  "sources": [
+    {
+      "source": "emscad_fraud_base",
+      "fraudulent": 1,
+      "rows": 815
+    },
+    {
+      "source": "naukri_30k_mirror",
+      "fraudulent": 0,
+      "rows": 29852
+    },
+    {
+      "source": "poova_data_analyst",
+      "fraudulent": 0,
+      "rows": 4790
+    },
+    {
+      "source": "poova_data_scientist",
+      "fraudulent": 0,
+      "rows": 729
+    },
+    {
+      "source": "synthetic_india_scam",
+      "fraudulent": 1,
+      "rows": 2483
+    }
+  ],
+  "files": {
+    "real_jobs": "india_real_jobs.csv",
+    "synthetic_fraud": "india_synthetic_fraud.csv",
+    "training_dataset": "india_training_dataset.csv",
+    "default_demo_dataset": "testData.csv"
+  }
+}

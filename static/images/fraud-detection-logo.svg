@@ -1,0 +1,17 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Online Recruitment Fraud Detection logo</title>
+  <desc id="desc">A shield with a check mark and signal node for fraud detection.</desc>
+  <defs>
+    <linearGradient id="g" x1="8" x2="56" y1="6" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#g)" d="M32 5 11 13v15c0 14 8.8 25.9 21 31 12.2-5.1 21-17 21-31V13L32 5Z"/>
+  <path fill="#fff" d="m28.4 39.8-9.1-9.1 4.1-4.1 5 5 12.2-12.2 4.1 4.1-16.3 16.3Z"/>
+  <circle cx="44" cy="18" r="4" fill="#dff7ff"/>
+  <path fill="#dff7ff" d="M41 18h-8v-3h8v3Zm-9 0h-6v-3h6v3Z" opacity=".72"/>
+</svg>
+
+
+

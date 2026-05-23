@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% set active_page = "login" %}
+{% block title %}Login | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Secure Access{% endblock %}
+{% block topbar_title %}Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_subtitle %}Sign in to access fraud detection tools.{% endblock %}
+
+{% block content %}
+<section class="center-shell">
+  <div class="auth-card">
+
+    <div class="auth-banner login-banner">
+      <span class="hero-eyebrow" style="margin-bottom:10px;">Welcome back</span>
+      <h2 class="hero-title small-title" style="margin-bottom:6px;">Sign in to your account</h2>
+      <p class="hero-description" style="font-size:0.82rem;">Access the dashboard, upload CSV files, and run AI-powered fraud analysis.</p>
+    </div>
+
+    <div style="padding:24px;">
+      <form name="f1" method="post" action="{{ url_for('admin_login_action') }}" class="form-stack" id="loginForm">
+        {% if success %}
+          <div class="message message-success">{{ success }}</div>
+        {% endif %}
+        {% if msg %}
+          <div class="message message-error">{{ msg }}</div>
+        {% endif %}
+
+        <div>
+          <label class="field-label" for="login_email">Email Address</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </span>
+            <input id="login_email" type="email" name="email" required placeholder="Enter your email" autocomplete="email">
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="login_password">Password</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </span>
+            <input id="login_password" type="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="button button-primary button-full" id="loginBtn">Sign In</button>
+
+        <p class="auth-switch centered-text">Don't have an account? <a href="{{ url_for('register') }}" class="auth-switch-link" id="goto-register">Create account</a></p>
+      </form>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

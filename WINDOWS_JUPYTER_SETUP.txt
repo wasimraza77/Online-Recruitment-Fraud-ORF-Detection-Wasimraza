@@ -1,0 +1,103 @@
+Windows Jupyter Setup
+
+Recommended:
+- Windows 10 or Windows 11
+- Python 3.9 (64-bit)
+
+Project purpose:
+- Train and test the job fraud detection notebook in Jupyter
+- Run the Flask app after training
+
+Files to use:
+- FraudJobDetection.ipynb
+- requirements-windows-jupyter.txt
+- setup_windows_jupyter.bat
+- run_jupyter_windows.bat
+
+Steps
+
+1. Extract the zip file
+   Example folder:
+   C:\FraudRecruitment
+
+2. Install Python 3.9 (64-bit)
+   During installation, enable:
+   - Add Python to PATH
+
+3. Open Command Prompt in the project folder
+   Example:
+   cd C:\FraudRecruitment
+
+4. Create the virtual environment
+   py -3.9 -m venv .venv
+
+5. Activate the environment
+   .venv\Scripts\activate
+
+6. Upgrade pip
+   python -m pip install --upgrade pip
+
+7. Install packages
+   pip install -r requirements-windows-jupyter.txt
+
+8. Register the notebook kernel
+   python -m ipykernel install --user --name fraudrecruitment --display-name "Python (.venv FraudRecruitment)"
+
+9. Start Jupyter
+   python -m notebook
+
+10. Open the notebook
+   FraudJobDetection.ipynb
+
+11. In Jupyter, select the correct kernel
+   Kernel > Change Kernel > Python (.venv FraudRecruitment)
+
+12. Run the NLTK download cell once in a new code cell
+   import nltk
+   nltk.download('stopwords')
+   nltk.download('wordnet')
+   nltk.download('omw-1.4')
+
+13. Run the notebook cells from top to bottom
+
+Important notebook notes
+- The notebook is already updated to use:
+  - Dataset/india_training_dataset.csv
+- Default training sample size is 5000 rows for a faster first run.
+- After the first successful run, you can change:
+  TRAIN_SAMPLE_SIZE = None
+  for full-data training.
+
+14. Start the web app from the last notebook cell
+   trained_app.run(host="127.0.0.1", port=5003, debug=False, use_reloader=False)
+
+15. Open the app
+   http://127.0.0.1:5003
+
+16. Login
+   username: admin
+   password: admin
+
+Common fixes
+
+- If a package import fails in Jupyter:
+  %pip install -r requirements-windows-jupyter.txt
+  Then restart the kernel.
+
+- If port 5003 is busy:
+  change the last notebook cell to:
+  trained_app.run(host="127.0.0.1", port=5004, debug=False, use_reloader=False)
+
+- If you want to run the Flask app without Jupyter after training:
+  python app.py
+
+Useful Windows commands
+
+- Activate environment:
+  .venv\Scripts\activate
+
+- Start Jupyter:
+  python -m notebook
+
+- Run Flask directly:
+  python app.py

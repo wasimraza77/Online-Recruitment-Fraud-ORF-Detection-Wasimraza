@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+users.db
+
+# Exclude massive files that exceed GitHub's 100MB limit and are unused by runtime
+model/X.npy
+model/bert.npy
+model/bert_X_old.npy
+model/roberta.npy
+model/roberta_X_old.npy
+Dataset/marketing_sample_for_trulia_com-real_estate__20190901_20191031__30k_data.csv

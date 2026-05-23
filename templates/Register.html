@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% set active_page = "register" %}
+{% block title %}Register | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Get Started{% endblock %}
+{% block topbar_title %}Create Account{% endblock %}
+{% block topbar_subtitle %}Create your account to access fraud detection tools.{% endblock %}
+
+{% block content %}
+<section class="center-shell">
+  <div class="auth-card" style="width:min(440px,100%);">
+
+    <div class="auth-banner register-banner">
+      <span class="hero-eyebrow" style="margin-bottom:10px;">Create Account</span>
+      <h2 class="hero-title small-title" style="margin-bottom:6px;">Join the platform</h2>
+      <p class="hero-description" style="font-size:0.82rem;">Register to upload job data, run AI analysis, and detect recruitment fraud.</p>
+    </div>
+
+    <div style="padding:24px;">
+      <form method="post" action="{{ url_for('register_action') }}" class="form-stack" id="registerForm" novalidate>
+        {% if msg %}
+          <div class="message message-error">{{ msg }}</div>
+        {% endif %}
+        {% if errors %}
+          <div class="message message-error">
+            {% for err in errors %}<div>{{ err }}</div>{% endfor %}
+          </div>
+        {% endif %}
+
+        <div>
+          <label class="field-label" for="full_name">Full Name</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </span>
+            <input id="full_name" type="text" name="full_name" required placeholder="Enter your full name" value="{{ form_name|default('') }}" autocomplete="name">
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="reg_email">Email Address</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </span>
+            <input id="reg_email" type="email" name="email" required placeholder="you@example.com" value="{{ form_email|default('') }}" autocomplete="email">
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="reg_password">Password</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </span>
+            <input id="reg_password" type="password" name="password" required placeholder="Create a password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="pw-strength" id="pwStrength">
+          <div class="pw-rule" id="ruleUpper"><span class="pw-check"></span> One uppercase letter</div>
+          <div class="pw-rule" id="ruleLower"><span class="pw-check"></span> One lowercase letter</div>
+          <div class="pw-rule" id="ruleDigit"><span class="pw-check"></span> One number</div>
+          <div class="pw-rule" id="ruleLength"><span class="pw-check"></span> At least 6 characters</div>
+        </div>
+
+        <div>
+          <label class="field-label" for="reg_confirm">Confirm Password</label>
+          <div class="input-shell">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            <input id="reg_confirm" type="password" name="confirm_password" required placeholder="Re-enter your password" autocomplete="new-password">
+          </div>
+          <div class="pw-rule" id="ruleMatch" style="margin-top:6px;"><span class="pw-check"></span> Passwords match</div>
+        </div>
+
+        <button type="submit" class="button button-register button-full" id="registerBtn">Create Account</button>
+
+        <p class="auth-switch centered-text">Already have an account? <a href="{{ url_for('admin_login') }}" class="auth-switch-link" id="goto-login">Sign In</a></p>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const pw = document.getElementById("reg_password");
+    const confirm = document.getElementById("reg_confirm");
+    const rules = {
+      upper: document.getElementById("ruleUpper"),
+      lower: document.getElementById("ruleLower"),
+      digit: document.getElementById("ruleDigit"),
+      length: document.getElementById("ruleLength"),
+      match: document.getElementById("ruleMatch"),
+    };
+    const checkPw = () => {
+      const v = pw.value;
+      const toggle = (el, ok) => el && el.classList.toggle("pw-pass", ok);
+      toggle(rules.upper, /[A-Z]/.test(v));
+      toggle(rules.lower, /[a-z]/.test(v));
+      toggle(rules.digit, /[0-9]/.test(v));
+      toggle(rules.length, v.length >= 6);
+      toggle(rules.match, v.length > 0 && v === confirm.value);
+    };
+    if (pw) pw.addEventListener("input", checkPw);
+    if (confirm) confirm.addEventListener("input", checkPw);
+  });
+</script>
+{% endblock %}

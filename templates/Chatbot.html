@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% set active_page = "chatbot" %}
+{% block title %}Assistant | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Assistant{% endblock %}
+{% block topbar_title %}Fraud Analysis Assistant{% endblock %}
+{% block topbar_subtitle %}Ask about job fraud, detection results, or paste a job description to analyze.{% endblock %}
+
+{% block content %}
+<section class="chat-layout">
+
+  <!-- Chat panel -->
+  <div class="panel-card chat-panel">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-icon">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      </div>
+      <div style="flex:1;">
+        <strong style="display:block;font-size:0.88rem;color:var(--text);">Fraud Analysis Assistant</strong>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:1px;">
+          <span class="online-dot"></span>
+          <span style="font-size:0.72rem;color:var(--text-muted);">Online</span>
+          <span id="chatEngineBadge" class="engine-badge engine-fallback">Checking&hellip;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages-area" id="chatMessages" aria-live="polite" aria-label="Chat messages" style="flex:1;"></div>
+
+    <!-- Suggestions -->
+    <div class="chat-suggestions" id="chatSuggestions">
+      <button class="chat-suggestion-btn" type="button" data-suggestion="What are the common signs of a fraudulent job posting?">Fraud signs</button>
+      <button class="chat-suggestion-btn" type="button" data-suggestion="How do I use this application to check jobs?">How to use</button>
+      <button class="chat-suggestion-btn" type="button" data-suggestion="What does the confidence percentage mean in the results?">Confidence %</button>
+      <button class="chat-suggestion-btn" type="button" data-suggestion="How does the model detect fraud in job postings?">Detection model</button>
+      <button class="chat-suggestion-btn" type="button" data-suggestion="How can I protect myself from fake job offers?">Stay safe</button>
+    </div>
+
+    <!-- File preview -->
+    <div id="filePreview" hidden class="file-preview-bar">
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--accent-text);fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>
+      <div style="flex:1;">
+        <strong id="filePreviewName" style="display:block;font-size:0.78rem;color:var(--text);"></strong>
+        <span id="filePreviewSize" style="font-size:0.70rem;color:var(--text-muted);"></span>
+      </div>
+      <button id="fileRemoveBtn" type="button" class="file-remove-btn" title="Remove file">&times;</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chatpage-input-row">
+      <input type="file" id="chatFileInput" accept=".pdf,.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp,application/pdf" hidden>
+      <button id="chatUploadBtn" type="button" aria-label="Upload file" title="Upload PDF or image" class="chat-icon-btn">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <textarea id="chatInput" placeholder="Ask anything, or paste a job description..." rows="1" aria-label="Type your message" class="chat-textarea"></textarea>
+      <button id="chatSendBtn" type="button" aria-label="Send message" title="Send" class="chat-send-btn">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:white;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send
+      </button>
+    </div>
+
+    <div class="chat-hint">
+      Press <kbd>Enter</kbd> to send &middot; <kbd>Shift+Enter</kbd> for new line
+    </div>
+  </div>
+
+  <!-- Info sidebar -->
+  <aside class="chat-sidebar">
+
+    <!-- Fraud Level Meter -->
+    <div class="panel-card fraud-meter-panel" id="fraudMeterPanel">
+      <h2 class="sidebar-panel-title">Fraud Level Meter</h2>
+      <p class="sidebar-panel-desc" id="fraudMeterDesc">Paste or upload a job description to see the fraud level assessment.</p>
+
+      <div class="fraud-meter-ring-wrap" id="fraudMeterWrap">
+        <svg class="fraud-meter-ring" viewBox="0 0 120 120">
+          <circle class="meter-track" cx="60" cy="60" r="52" />
+          <circle class="meter-fill" id="meterFill" cx="60" cy="60" r="52" />
+        </svg>
+        <div class="fraud-meter-center" id="fraudMeterCenter">
+          <span class="meter-score" id="meterScore">&mdash;</span>
+          <span class="meter-label" id="meterLabel">Waiting</span>
+        </div>
+      </div>
+
+      <div class="fraud-meter-legend">
+        <div class="legend-item"><span class="legend-dot legend-safe"></span>0-30 Safe</div>
+        <div class="legend-item"><span class="legend-dot legend-low"></span>31-50 Low</div>
+        <div class="legend-item"><span class="legend-dot legend-moderate"></span>51-70 Moderate</div>
+        <div class="legend-item"><span class="legend-dot legend-high"></span>71-85 High</div>
+        <div class="legend-item"><span class="legend-dot legend-critical"></span>86-100 Critical</div>
+      </div>
+    </div>
+
+    <div class="panel-card sidebar-info-card">
+      <h2 class="sidebar-panel-title">About This Assistant</h2>
+      <p class="sidebar-panel-desc">Helps explain fraud patterns, model output, and suspicious job posting details.</p>
+    </div>
+
+    <div class="panel-card sidebar-info-card">
+      <h2 class="sidebar-panel-title">Capabilities</h2>
+      <ul class="capability-list">
+        <li><span class="cap-check">&#10003;</span> Explain fraud patterns</li>
+        <li><span class="cap-check">&#10003;</span> Describe confidence scores</li>
+        <li><span class="cap-check">&#10003;</span> Guide through uploading</li>
+        <li><span class="cap-check">&#10003;</span> Scan pasted descriptions</li>
+        <li><span class="cap-check">&#10003;</span> Analyze uploaded PDF/Image</li>
+      </ul>
+    </div>
+
+    <div class="panel-card sidebar-info-card">
+      <h2 class="sidebar-panel-title">Supported Files</h2>
+      <div class="file-type-tags">
+        <span class="file-tag file-tag-red">PDF</span>
+        <span class="file-tag file-tag-blue">JPG</span>
+        <span class="file-tag file-tag-green">PNG</span>
+        <span class="file-tag file-tag-amber">WebP</span>
+      </div>
+    </div>
+
+    <div class="panel-card sidebar-info-card">
+      <h2 class="sidebar-panel-title">Navigation</h2>
+      <div class="nav-links-list">
+        <a href="{{ url_for('index') }}">Dashboard &mdash; statistics</a>
+        <a href="{{ url_for('predict_view') }}">Upload &amp; Check &mdash; run detection</a>
+        <span class="nav-current">Assistant &mdash; you are here</span>
+      </div>
+    </div>
+
+  </aside>
+
+</section>
+{% endblock %}

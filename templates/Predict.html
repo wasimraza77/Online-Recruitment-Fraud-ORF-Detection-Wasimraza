@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% set active_page = "predict" %}
+{% block title %}Upload &amp; Check | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Upload &amp; Check{% endblock %}
+{% block topbar_title %}Upload &amp; Check{% endblock %}
+{% block topbar_subtitle %}Upload job data and check whether postings look real or suspicious.{% endblock %}
+
+{% block content %}
+<section class="upload-layout">
+
+  <div class="page-banner compact-banner">
+    <span class="hero-eyebrow">Batch Analysis</span>
+    <h2 class="hero-title small-title" style="margin-bottom:6px;">Start a new fraud check</h2>
+    <p class="hero-description" style="font-size:0.82rem;">Upload job posting data and let the system review it for suspicious patterns.</p>
+  </div>
+
+  <div class="panel-card upload-panel">
+    <div class="panel-header centered">
+      <h2 class="section-title">Upload Job Data (CSV)</h2>
+      <p class="section-text">We will detect suspicious job postings using AI. Must include a <code>description</code> column.</p>
+    </div>
+
+    <form name="f1" method="post" action="{{ url_for('predict_action') }}" enctype="multipart/form-data" class="form-stack" data-loading-form>
+      {% if msg %}
+        <div class="message message-info">{{ msg }}</div>
+      {% endif %}
+
+      <div class="upload-zone" data-upload-zone>
+        <input id="test-file" type="file" name="t1" accept=".csv" data-upload-input>
+        <label for="test-file" class="upload-zone-inner">
+          <span class="upload-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+          </span>
+          <strong>Drag and drop your CSV file here</strong>
+          <span data-upload-name>Drop a CSV file here or browse your device.</span>
+          <small>Required column: <code>description</code></small>
+        </label>
+      </div>
+
+      <p class="message message-error" data-upload-error hidden>Please upload a valid CSV file.</p>
+
+      <div class="subtle-note">
+        If no file is selected, the system will use the sample file included in the project.
+      </div>
+
+      <div class="button-row" style="justify-content:center;margin-top:4px;">
+        <button type="submit" class="button button-primary" data-loading-button data-loading-text="Running Fraud Detection..." id="run-detection-btn">Run Fraud Detection</button>
+        <a href="{{ url_for('index') }}" class="button button-secondary" id="back-dashboard-btn">Back to Dashboard</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="process-grid">
+    <article class="process-item">
+      <span class="process-number">01</span>
+      <strong>Prepare CSV</strong>
+      <p>Keep one row per job posting. Include a <code>description</code> column. Optional: <code>title</code>, <code>location</code>.</p>
+    </article>
+    <article class="process-item">
+      <span class="process-number">02</span>
+      <strong>Run Detection</strong>
+      <p>The system builds BERT embeddings and applies the CNN model to classify each posting.</p>
+    </article>
+    <article class="process-item">
+      <span class="process-number">03</span>
+      <strong>Review Report</strong>
+      <p>View results with confidence bars, filters, search, CSV export, and print tools.</p>
+    </article>
+  </div>
+
+</section>
+{% endblock %}

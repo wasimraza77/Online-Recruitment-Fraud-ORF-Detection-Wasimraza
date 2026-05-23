@@ -1,0 +1,13 @@
+India-focused source files used by scripts/prepare_india_dataset.py
+
+Fraud base
+https://www.kaggle.com/datasets/shivamb/real-or-fake-fake-jobposting-prediction
+
+India real-job mirrors
+https://raw.githubusercontent.com/mrmaheshrajput/edanaukri/master/data.csv
+https://raw.githubusercontent.com/mrmaheshrajput/edanaukri/master/processed_data.csv
+https://raw.githubusercontent.com/Poova53/Analysis-of-data-scientist-and-data-analyst-job-in-India/master/1.%20Scraping%20data/data%20analyst.csv
+https://raw.githubusercontent.com/Poova53/Analysis-of-data-scientist-and-data-analyst-job-in-India/master/1.%20Scraping%20data/data%20scientist.csv
+
+Legacy sources kept only for reference
+https://www.kaggle.com/datasets/zusmani/pakistans-job-market

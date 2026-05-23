@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% block title %}Dashboard | Online Recruitment Fraud Detection{% endblock %}
+{% block topbar_label %}Dashboard{% endblock %}
+{% block topbar_title %}Dashboard{% endblock %}
+{% block topbar_subtitle %}Overview of fraud detection data and quick actions.{% endblock %}
+
+{% block content %}
+<section class="dashboard-panel">
+
+  <div class="hero-banner">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">AI Powered Detection</span>
+      <h2 class="hero-title">Smart fraud detection for a safer career journey</h2>
+      <p class="hero-description">Upload job posting data and let our AI analyze listings to identify scams in seconds using BERT + CNN models.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="{{ url_for('predict_view') }}" id="hero-check-btn">Check New Jobs</a>
+        <a class="button button-secondary" href="{{ url_for('chatbot_page') }}" id="hero-assistant-btn">AI Assistant</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-shield" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid stats-grid-four">
+    <article class="stat-card">
+      <div class="stat-icon stat-icon-blue">
+        <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <span class="stat-label">Total Jobs Checked</span>
+      <strong class="stat-value">{{ metrics.total_records }}</strong>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon stat-icon-green">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <span class="stat-label">Real Jobs</span>
+      <strong class="stat-value stat-success">{{ metrics.real_jobs }}</strong>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon stat-icon-red">
+        <svg viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <span class="stat-label">Suspicious Jobs</span>
+      <strong class="stat-value stat-danger">{{ metrics.fraud_jobs }}</strong>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon stat-icon-amber">
+        <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <span class="stat-label">Fraud Rate</span>
+      <strong class="stat-value">{{ metrics.fraud_rate }}</strong>
+    </article>
+  </div>
+
+  <div class="detail-grid">
+    <article class="detail-item">
+      <span class="detail-kicker">Input</span>
+      <strong>CSV Based Screening</strong>
+      <p>Upload job posting data with a <code>description</code> column for a batch fraud check.</p>
+    </article>
+    <article class="detail-item">
+      <span class="detail-kicker">Model</span>
+      <strong>BERT + CNN Classifier</strong>
+      <p>The system uses saved BERT embeddings with a 2D CNN classifier for fast inference.</p>
+    </article>
+    <article class="detail-item">
+      <span class="detail-kicker">Output</span>
+      <strong>Confidence &amp; Status Report</strong>
+      <p>Results include status labels, confidence bars, filters, search, CSV export, and print.</p>
+    </article>
+  </div>
+
+  <div class="action-card">
+    <div>
+      <h2 class="section-title">Ready to check new job data?</h2>
+      <p class="section-text">Upload a CSV file and get clear fraud results in seconds.</p>
+    </div>
+    <a class="button button-primary" href="{{ url_for('predict_view') }}" id="cta-check-btn">Check New Jobs</a>
+  </div>
+
+</section>
+{% endblock %}

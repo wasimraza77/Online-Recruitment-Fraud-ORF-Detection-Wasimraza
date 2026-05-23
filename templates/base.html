@@ -22,9 +22,10 @@
 </head>
 
 <body>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
   <div class="app-shell">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <a class="brand"
         href="{% if session.get('is_admin_logged_in') %}{{ url_for('index') }}{% else %}{{ url_for('admin_login') }}{% endif %}">
         <span class="brand-mark" aria-hidden="true">
@@ -95,12 +96,15 @@
 
     <div class="workspace">
       <header class="topbar">
-        <div class="topbar-copy">
-          <span class="topbar-label">{% block topbar_label %}Fraud Detection{% endblock %}</span>
-          <h1 class="topbar-title">{% block topbar_title %}Online Recruitment Fraud Detection{% endblock %}</h1>
-          <p class="topbar-subtitle">{% block topbar_subtitle %}Check job postings for fraud risk.{% endblock %}</p>
-        </div>
-        <div class="topbar-actions">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="topbar-copy">
+            <span class="topbar-label">{% block topbar_label %}Fraud Detection{% endblock %}</span>
+            <h1 class="topbar-title">{% block topbar_title %}Online Recruitment Fraud Detection{% endblock %}</h1>
+            <p class="topbar-subtitle">{% block topbar_subtitle %}Check job postings for fraud risk.{% endblock %}</p>
+          </div>
+          <div class="topbar-actions">
           {% block topbar_actions %}
           <div class="theme-toggle" id="themeToggle" aria-label="Theme switcher">
             <button class="theme-toggle-btn is-active" type="button" data-theme-value="default" title="Default theme">
@@ -137,6 +141,20 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      /* ─── Mobile Sidebar Toggle ─── */
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const sidebar = document.getElementById("sidebar");
+      const mobileOverlay = document.getElementById("mobileOverlay");
+      
+      if (mobileMenuBtn && sidebar && mobileOverlay) {
+        const toggleMenu = () => {
+          sidebar.classList.toggle("is-open");
+          mobileOverlay.classList.toggle("is-active");
+        };
+        mobileMenuBtn.addEventListener("click", toggleMenu);
+        mobileOverlay.addEventListener("click", toggleMenu);
+      }
+
       /* ─── Theme Toggle ─── */
       const themeToggle = document.getElementById("themeToggle");
       if (themeToggle) {

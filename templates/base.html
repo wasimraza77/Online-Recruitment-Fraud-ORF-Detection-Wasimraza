@@ -147,12 +147,24 @@
       const mobileOverlay = document.getElementById("mobileOverlay");
       
       if (mobileMenuBtn && sidebar && mobileOverlay) {
-        const toggleMenu = () => {
-          sidebar.classList.toggle("is-open");
-          mobileOverlay.classList.toggle("is-active");
+        const closeMenu = () => {
+          sidebar.classList.remove("is-open");
+          mobileOverlay.classList.remove("is-active");
+          document.body.style.overflow = "";
         };
-        mobileMenuBtn.addEventListener("click", toggleMenu);
-        mobileOverlay.addEventListener("click", toggleMenu);
+        const openMenu = () => {
+          sidebar.classList.add("is-open");
+          mobileOverlay.classList.add("is-active");
+          document.body.style.overflow = "hidden";
+        };
+        mobileMenuBtn.addEventListener("click", () => {
+          sidebar.classList.contains("is-open") ? closeMenu() : openMenu();
+        });
+        mobileOverlay.addEventListener("click", closeMenu);
+        // Auto-close sidebar when a nav link is tapped
+        sidebar.querySelectorAll(".nav-link").forEach(link => {
+          link.addEventListener("click", closeMenu);
+        });
       }
 
       /* ─── Theme Toggle ─── */
